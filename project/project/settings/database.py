@@ -1,5 +1,4 @@
-from .secret import get_secret
-
+from .secret import get_secret, get_secrets
 
 #################################
 # База данных
@@ -8,10 +7,13 @@ from .secret import get_secret
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': get_secret(section='DATABASE', setting='HOST'),
-        'PORT': get_secret(section='DATABASE', setting='PORT'),
-        'NAME': get_secret(section='DATABASE', setting='NAME'),
-        'USER': get_secret(section='DATABASE', setting='USER'),
-        'PASSWORD': get_secret(section='DATABASE', setting='PASSWORD'),
+        'HOST': get_secret(section='DATABASE', setting='default')['HOST'],
+        'PORT': get_secret(section='DATABASE', setting='default')['PORT'],
+        'NAME': get_secret(section='DATABASE', setting='default')['NAME'],
+        'USER': get_secret(section='DATABASE', setting='default')['USER'],
+        'PASSWORD': get_secret(section='DATABASE', setting='default')['PASSWORD'],
+
+        'TEST': {'NAME': get_secret(section='DATABASE', setting='default')['TEST']['NAME'],
+                 }
     }
 }

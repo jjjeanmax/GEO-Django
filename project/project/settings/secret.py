@@ -26,3 +26,19 @@ def get_secret(setting, section=None, secrets=None):
         key = setting if not section else '%s["%s"]' % (section, setting)
         error_message = 'Secrets: {} key not found in configs.json.'.format(key)
         raise ImproperlyConfigured(error_message)
+
+
+def get_secrets(setting, db = None, section=None, secrets=None):
+    if secrets is None:
+        secrets = secrets_data
+
+    try:
+        if db:
+            return secrets[setting]
+        if section:
+            return secrets[section][setting]
+        return secrets[db][setting]
+    except KeyError:
+        key = setting if not section else '%s["%s"]' % (section, setting)
+        error_message = 'Secrets: {} key not found in configs.json.'.format(key)
+        raise ImproperlyConfigured(error_message)
