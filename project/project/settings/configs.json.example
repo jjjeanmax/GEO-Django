@@ -1,0 +1,13 @@
+{
+    "PROTOCOL": "http",
+    "DOMAIN": "localhost",
+    "DEBUG": true,
+    "SECRET_KEY": "<set_secret_key_here>",
+    "DATABASE": {
+        "HOST": "",
+        "PORT": "",
+        "NAME": "",
+        "USER": "",
+        "PASSWORD": ""
+    }
+}
