@@ -1,40 +1,27 @@
-import json
-import urllib
 from unittest import skipIf
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase, AsyncRequestFactory
 from django.urls import reverse
+from django.test import TestCase, RequestFactory
 
 from building.models import Building
-from .views import (
-    BuildingViewSet,
-)
+
 
 has_spatialite = (
         settings.DATABASES['default']['ENGINE']
         == 'django.contrib.gis.db.backends.spatialite'
 )
 
-try:
-    from django.contrib.gis.db.models.functions import GeometryDistance
-
-    has_geometry_distance = GeometryDistance and True
-except ImportError:
-    has_geometry_distance = False
-
 
 class TestRestFrameworkGisFilters(TestCase):
-
-    client = AsyncRequestFactory()
-    view = BuildingViewSet.as_view({'get': 'filter_by_aera'})
+    factory = RequestFactory()
     """
     unit tests for filters 
     """
 
     def setUp(self):
-        self.location_within_distance_of_point_list_url = reverse(
+        self.building_within_distance_of_point_list_url = reverse(
             'api_building_within_distance_of_point_list_url'
         )
 
@@ -148,7 +135,7 @@ class TestRestFrameworkGisFilters(TestCase):
 
         url_params = '?dist=%0.4f&point=hello&format=json' % (distance,)
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_distance_of_point_list_url, url_params)
         )
         self.assertEqual(response.status_code, 400)
 
@@ -171,8 +158,9 @@ class TestRestFrameworkGisFilters(TestCase):
 
         # Get back the ones within the distance
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_distance_of_point_list_url, url_params)
         )
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['features']), 1)
         for result in response.data['features']:
             self.assertEqual(result['properties']['address'], corberon.address)
@@ -185,7 +173,7 @@ class TestRestFrameworkGisFilters(TestCase):
             point_on_alcatraz[1],
         )
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_distance_of_point_list_url, url_params)
         )
         self.assertEqual(len(response.data['features']), 2)
         for result in response.data['features']:
@@ -202,15 +190,21 @@ class TestRestFrameworkGisFilters(TestCase):
         given geometry defined by the URL parameters
         """
         self.assertEqual(Building.objects.count(), 0)
-
         # Filter parameters
         area = 0.00039117  # meters^2
 
-        url_params = '?area=%f&format=json' % (area,)
+        url_params = f'?area={area}&format=json'
+
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_area_url, url_params)
         )
         self.assertEqual(response.status_code, 200)
+
+        url_params2 = '?area=hello&format=json'
+        response = self.client.get(
+            '%s%s' % (self.building_within_area_url, url_params2)
+        )
+        self.assertEqual(response.status_code, 400)
 
         url_params = '?area=%f&format=json' % (area,)
         corberon = Building()
@@ -233,18 +227,21 @@ class TestRestFrameworkGisFilters(TestCase):
         self.assertEqual(tuple((qs_all.keys())), (corberon_area, corgegoux2_area))
 
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_area_url, url_params)
         )
 
         for result in response.data['features']:
-            self.assertNotEqual(result['id'], (corberon.id,))
+            self.assertEqual(result['id'], corgegoux2_area)
+            self.assertNotEqual(result['id'], corberon_area)
 
         area = 0.00040758  # meters^2
         url_params = '?area=%f&format=json' % (area,)
 
         response = self.client.get(
-            '%s%s' % (self.location_within_distance_of_point_list_url, url_params)
+            '%s%s' % (self.building_within_area_url, url_params)
         )
 
         for result in response.data['features']:
-            self.assertNotEqual(result['id'], (corgegoux2.id,))
+            print(result['id'])
+            self.assertEqual(result['id'], corgegoux2_area)
+            self.assertNotEqual(result['id'], corberon_area)

@@ -7,6 +7,7 @@ class BuildingQuerySet(models.QuerySet):
         all_airea = {}
         _all = list(super().values('geom', 'id'))
         for a in _all:
+            # тут выбираю 8 знаков после запятой
             all_airea[(round(GEOSGeometry(a['geom']).area, 8))] = a['id']
         return all_airea
 

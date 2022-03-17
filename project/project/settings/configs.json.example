@@ -9,5 +9,9 @@
         "NAME": "",
         "USER": "",
         "PASSWORD": ""
+
+       "TEST": {
+          "NAME": "test_building"
+      }
     }
 }

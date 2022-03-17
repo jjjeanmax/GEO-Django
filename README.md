@@ -63,25 +63,43 @@
 7. Добавить в проект тесты, проверяющие правильность работы фильтров.
 
 
+## Конфигурационный файл
+При развертывание скопировать файл `configs.json.example` в файл `configs.json` в директории 
+`project/project/settings/`.
+
+Пример `configs.json` файла `project/project/settings/configs.json.example`.
+
 ## Старт
 
 1. Создать и активировать виртуальное окружение:
 
     `python -m venv venv`
 
-2. Установить пакеты :
+
+2. Установить пакеты:
 
     `pip install -r requirements.txt`
 
-3. Выполнить команду для выполнения миграций:
+
+3. Выполнить команду для выполнения миграций :
 
     `python manage.py migrate`
+
 
 4. Создать статичные файлы: 
 
     `python manage.py collectstatic`
-    
 
-5. Запустить сервер:
-    
+
+5. Создать суперпользователя:
+
+    `python manage.py createsuperuser`
+
+
+6. Запустить сервер:
+
     `$ python manage.py runserver`
+
+7. Документация:
+
+   http://127.0.0.1:8000/api/redoc/
