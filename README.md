@@ -1,90 +1,88 @@
 # GEO-Django
-Работа с пространственными данными, системы координат,  пространственные запросы к БД, вычисления расстояний и площадей на эллипсоиде
+Working with spatial data, coordinate systems, spatial database queries, calculating distances and areas on an ellipsoid
 
 
-# Требование:
+# Requirement:
 
-- База данных: PostgreSQL 10.0 или выше с расширением PostGIS 3.0 или выше.
-- Язык программирования: Python 3.8 или выше.
-- Библиотеки Python: Django 3.2 или выше, Django REST Framework 3.12 или выше,
-  psycopg2 2.8 или выше.
-- Дополнительные системные библиотеки, необходимые для работы с пространственными
-  данными: GDAL 3.0 или выше, PROJ 6.0 или выше, GEOS 3.6 или выше.
-- Десктопные приложения для подготовки и просмотра пространственных данных
-  (опционально, может быть полезным при тестировании): QGIS 3.x.
+- Database: PostgreSQL 10.0 or higher with PostGIS 3.0 extension or higher.
+- Programming language: Python 3.8 or higher.
+- Python libraries: Django 3.2 or higher, Django REST Framework 3.12 or higher,
+  psycopg2 2.8 or higher.
+- Additional system libraries required to work with spatial
+  Data: GDAL 3.0 or higher, PROJ 6.0 or higher, GEOS 3.6 or higher.
+- Desktop applications for preparing and viewing spatial data
+  (optional, may be useful for testing): QGIS 3.x.
 
-Содержание задания
+Job content
 ------------------
 
 Django + Django REST Framework.
 
-1. Добавить в проект приложение с моделью Building, описывающую географическое
-   положение и адрес строения. Требуются следующие поля:
-   - id  - целочисленный первичный ключ с автоинкрементом;
-   - geom - полигональная геометрия в системе координат WGS84 (EPSG:4326);
-   - address - текстовая строка для хранения почтового адреса строения.
+1. Add an application to the project with a Building model that describes a geographic
+   the location and address of the building. The following fields are required:
+   - id - integer primary key with auto increment;
+   - geom - polygonal geometry in WGS84 coordinate system (EPSG:4326);
+   - address - text string to store the postal address of the building.
 
-2. Реализовать REST API для CRUD на базе ModelViewSet, позволяющий создавать,
-   изменять, удалять и получать записи таблицы building. Должен поддерживаться
-   формат пространственных данных GeoJSON (RFC 7946). При обращении к элементам
-   коллекции по id (методы GET, POST, UPDATE) должен передаваться или возвращаться
-   объект типа Feature, при обращении к коллекции в целом (метод GET) - объект
-   FeatureCollection из спецификации GeoJSON. Пагинация результатов не требуется.
+2. Implement a REST API for CRUD based on ModelViewSet that allows you to create,
+   modify, delete, and retrieve records in the building table. Must be supported
+   GeoJSON spatial data format (RFC 7946). When accessing elements
+   collections by id (methods GET, POST, UPDATE) must be passed or returned
+   an object of type Feature, when accessing the collection as a whole (GET method) - an object
+   FeatureCollection from the GeoJSON specification. Pagination of results is not required.
 
-3. Добавить валидатор, проверяющий геометрию объекта на валидность при добавлении
-   или изменении записи.
+3. Add a validator that checks the geometry of the object for validity when added
+   or change the entry.
 
-4. Добавить фильтр, позволяющий отфильтровывать возвращаемые геометрические
-   объекты в зависимости от их площади. Фильтр должен принимать в параметрах
-   GET-запроса значение минимальной и (или) максимальной площади полигона
-   в квадратных метрах.
+4. Add a filter that allows you to filter the returned geometric
+   objects according to their area. The filter must accept in parameters
+   GET request value of the minimum and (or) maximum area of ​​the polygon
+   in square meters.
 
-5. Добавить фильтр, позволяющий отфильтровывать возвращаемые геометрические
-   объекты в зависимости от их расстояния от заданной точки. Фильтр должен принимать в параметрах GET-запроса координаты точки (долготу и широту
-   в системе координат WGS84) и максимальное расстояние в метрах.
-   Должны возвращаться объекты, попадающие в заданный радиус полностью
-   или частично.
+5. Add a filter that allows you to filter the returned geometric
+   objects based on their distance from a given point. The filter must accept point coordinates (longitude and latitude) as parameters of the GET request.
+   in the WGS84 coordinate system) and the maximum distance in meters.
+   Objects that fall completely within the given radius should be returned.
+   or partially.
 
-6. Добавить в проект тесты, проверяющие правильность работы фильтров.
+6. Add tests to the project that check the correct operation of the filters.
 
 
-## Конфигурационный файл
-При развертывание скопировать файл `configs.json.example` в файл `configs.json` в директории 
+## Configuration file
+When deploying, copy the `configs.json.example` file to the `configs.json` file in the directory
 `project/project/settings/`.
 
-Пример `configs.json` файла `project/project/settings/configs.json.example`.
+Example `configs.json` file `project/project/settings/configs.json.example`.
 
-## Старт
+## Start
 
-1. Создать и активировать виртуальное окружение:
+1. Create and activate virtual environment:
 
     `python -m venv venv`
 
-
-2. Установить пакеты:
+2. Install packages:
 
     `pip install -r requirements.txt`
 
-
-3. Выполнить команду для выполнения миграций :
+3. Run migrations:
 
     `python manage.py migrate`
 
-
-4. Создать статичные файлы: 
-
-    `python manage.py collectstatic`
-
-
-5. Создать суперпользователя:
+4. Create superuser:
 
     `python manage.py createsuperuser`
 
+4. Create config file:
 
-6. Запустить сервер:
+    `configs.json`
 
+6. Start django server:
+    
     `$ python manage.py runserver`
 
-7. Документация:
+7. Start telegram server from BOT repository:
+    
+    `$ python main.py`
 
-   http://127.0.0.1:8000/api/redoc/
+### Documentation is available in docs:
+>  http://127.0.0.1:8000/api/redoc/
